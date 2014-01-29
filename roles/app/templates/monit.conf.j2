@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+check process {{ application }}_unicorn with pidfile {{ unicorn_pid }}
+  start program = "/etc/init.d/unicorn_{{ application }} start"
+  stop program = "/etc/init.d/unicorn_{{ application }} stop"
+
+{% for n in range(0, unicorn_workers) %}
+  check process {{ application }}_unicorn_worker_{{ n }} with pidfile unicorn_pid.{{ n }}.pid
+    start program = "/bin/true"
+    stop program = "/usr/bin/test -s unicorn_pid.{{ n }}.pid && /bin/kill -QUIT `cat unicorn_pid.{{ n }}.pid`"
+    if mem > 200.0 MB for 1 cycles then restart
+    if cpu > 50% for 3 cycles then restart
+    if 5 restarts within 5 cycles then timeout
+    alert jason.truluck@gmail.com only on { unicorn_pid.{{ n }}.pid }
+    if changed pid 2 times within 60 cycles then alert
+{% endfor %}

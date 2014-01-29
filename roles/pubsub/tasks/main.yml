@@ -1,0 +1,13 @@
+---
+# This is mainly for capistrano later since sudo is no longer available in v3
+- name: create sudoers file
+  sudo: yes
+  template: src=sudoers.j2 dest=/etc/sudoers.d/{{ user }}_pubsubservers validate='visudo -cf %s' owner=root group=root mode=0440
+
+- name: create faye initializer
+  sudo: yes
+  template: src=faye_init.j2 dest=/etc/init.d/faye_{{ application }} mode=0755
+
+- name: initialize faye defaults
+  sudo: yes
+  command: update-rc.d -f faye_{{ application }} defaults

@@ -1,0 +1,20 @@
+---
+- name: download ruby
+  get_url: url={{ruby_url}} dest=/home/{{user}}/ruby-{{ruby_version}}.tar
+
+- name: Extract ruby
+  command: tar -zxf /home/{{user}}/ruby-{{ruby_version}}.tar creates=/home/{{user}}/ruby-{{ruby_version}}
+
+- name: configure ruby
+  shell: ./configure chdir=/home/{{user}}/ruby-{{ruby_version}}
+
+- name: make ruby
+  shell: make chdir=/home/{{user}}/ruby-{{ruby_version}}
+
+- name: install ruby
+  sudo: yes
+  shell: make install chdir=/home/{{user}}/ruby-{{ruby_version}}
+
+- name: install bundler
+  sudo: yes
+  shell: gem install bundler

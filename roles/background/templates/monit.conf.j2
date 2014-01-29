@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+check process resque
+  with pidfile {{ current_path }}/tmp/pids/resque.pid
+  start program = "/usr/bin/env HOME=/home/user RACK_ENV=production PATH=/usr/local/bin:/usr/local/ruby/bin:/usr/bin:/bin:$PATH /bin/sh -l -c 'cd {{ current_path }}; nohup bundle exec rake environment resque:work RAILS_ENV=production QUEUE=* VERBOSE=1 PIDFILE=tmp/pids/resque.pid >> log/resque.log 2>&1'" as uid {{ user }} and gid {{ user }}
+  stop program = "/bin/sh -c 'cd {{ current_path }} && kill -9 $(cat tmp/pids/resque.pid) && rm -f tmp/pids/resque.pid; exit 0;'"
+  if totalmem is greater than 300 MB for 10 cycles then restart  # eating up memory?
+  group resque_workers

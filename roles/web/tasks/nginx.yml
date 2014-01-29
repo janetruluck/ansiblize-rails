@@ -1,0 +1,13 @@
+---
+- name: install nginx
+  sudo: yes
+  apt: name=nginx state=present
+
+- name: setup nginx
+  sudo: yes
+  template: src=default.conf.j2 dest=/etc/nginx/sites-enabled/default.conf
+  notify: restart nginx
+
+- name: create nginx monit file
+  sudo: yes
+  template: src=monit.conf.j2 dest=/etc/monit/conf.d/nginx.conf owner=root mode=0600

@@ -1,0 +1,4 @@
+---
+- name: create resque monit file
+  sudo: yes
+  template: src=monit.conf.j2 dest=/etc/monit/conf.d/resque.conf owner=root mode=0600

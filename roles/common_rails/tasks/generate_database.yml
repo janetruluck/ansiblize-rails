@@ -1,0 +1,3 @@
+---
+- name: generate database.yml
+  template: src=database.yml.j2 dest={{ shared_path }}/config/database.yml owner={{ user }}

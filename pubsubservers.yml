@@ -1,0 +1,6 @@
+---
+- name: Configure Pubsub Servers
+  hosts: pubsubservers
+  user: deploy
+  roles:
+    - pubsub

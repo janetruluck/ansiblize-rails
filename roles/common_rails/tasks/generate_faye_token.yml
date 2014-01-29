@@ -1,0 +1,3 @@
+---
+- name: generate faye_token.rb
+  template: src=faye_token.rb.j2 dest={{ shared_path }}/config/initializers/faye_token.rb owner={{ user }}

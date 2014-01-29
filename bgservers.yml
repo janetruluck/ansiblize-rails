@@ -1,0 +1,6 @@
+---
+- name: Configure Background Servers
+  hosts: bgservers
+  user: deploy
+  roles:
+    - background

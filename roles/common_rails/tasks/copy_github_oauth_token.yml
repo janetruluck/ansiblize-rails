@@ -1,0 +1,3 @@
+---
+- name: copying github oauth token
+  copy: src="{{ local_project_directory }}/config/initializers/github_client_token.rb" dest="{{ shared_path }}/config/initializers/github_client_token.rb"

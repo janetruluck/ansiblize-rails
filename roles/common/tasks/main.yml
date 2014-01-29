@@ -1,0 +1,52 @@
+---
+- name: update deploy user 
+  sudo: yes
+  user: name={{user}} state=present generate_ssh_key=yes ssh_key_bits=2048 group={{user_group}}
+
+- name: copy local ssh keys to deploy user
+  copy: src={{local_ssh_key}} dest=/home/{{user}}/.ssh/authorized_keys owner={{user}}
+
+- name: Disallow root SSH access
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  sudo: yes
+  notify: restart ssh
+
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  sudo: yes
+  notify: restart ssh
+
+- name: update apt-get 
+  sudo: yes
+  apt: update_cache=yes upgrade=yes
+
+- name: install common packages
+  sudo: yes
+  apt: pkg={{item}} state=present
+  with_items:
+    - autoconf
+    - automake
+    - bison
+    - build-essential
+    - curl
+    - git
+    - git-core
+    - libtool
+    - libreadline6
+    - libreadline6-dev
+    - libssl-dev
+    - libyaml-dev
+    - libsqlite3-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - libc6-dev
+    - nodejs
+    - openssl
+    - pkg-config
+    - python-software-properties
+    - zlib1g
+    - zlib1g-dev
+ 
+- include: iptables.yml 
+- include: fail2ban.yml 
+- include: monit.yml 

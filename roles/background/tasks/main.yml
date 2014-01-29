@@ -1,0 +1,7 @@
+---
+- include: resque.yml
+
+# This is mainly for capistrano later since sudo is no longer available in v3
+- name: create sudoers file
+  sudo: yes
+  template: src=sudoers.j2 dest=/etc/sudoers.d/{{ user }}_bgservers validate='visudo -cf %s' owner=root group=root mode=0440

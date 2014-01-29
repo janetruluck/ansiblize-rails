@@ -1,0 +1,8 @@
+---
+- name: install monit
+  sudo: yes
+  apt: name=monit state=present
+
+- name: setup monit
+  sudo: yes
+  template: src=monitrc.j2 dest=/etc/monit/conf.d/monitrc.conf owner=root mode=0600

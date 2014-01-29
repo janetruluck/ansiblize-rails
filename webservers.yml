@@ -1,0 +1,6 @@
+---
+- name: Configure Web Servers
+  hosts: webservers
+  user: deploy
+  roles:
+    - web

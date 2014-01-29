@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+{{ rails_env }}:
+  adapter: postgresql
+  host: {{ postgresql_host }}
+  port: {{ postgresql_port }}
+  encoding: unicode
+  pool: 5
+  database: {{ postgresql_database }}
+  username: {{ user }}
+  password: {{ postgresql_password }}

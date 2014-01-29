@@ -1,0 +1,15 @@
+---
+- name: create shared directory
+  file: path={{ shared_path }}/config/initializers owner={{ user }} state=directory
+
+- name: get current ruby version
+  command: ruby -v 
+  register: result
+  ignore_errors: True
+
+- include: ruby.yml 
+  when: result.rc !=0 or result.stdout.split()[1] != ruby_version
+- include: generate_database.yml
+- include: generate_faye_token.yml
+- include: generate_resque.yml
+- include: copy_github_oauth_token.yml

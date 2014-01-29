@@ -1,0 +1,6 @@
+---
+- name: Apply Common Configuration to all Nodes 
+  hosts: all
+  user: deploy
+  roles: 
+    - common

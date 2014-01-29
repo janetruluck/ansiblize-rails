@@ -1,0 +1,15 @@
+---
+- name: create unicorn config
+  template: src=unicorn_config.j2 dest={{ unicorn_config }}
+
+- name: create unicorn init
+  sudo: yes
+  template: src=unicorn_init.j2 dest=/etc/init.d/unicorn_{{ application }} mode=0755
+  
+- name: initialize unicorn defaults
+  sudo: yes
+  command: update-rc.d -f unicorn_{{ application }} defaults
+
+- name: create unicorn monit
+  sudo: yes
+  template: src=monit.conf.j2 dest=/etc/monit/conf.d/unicorn.conf owner=root mode=0600

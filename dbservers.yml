@@ -1,0 +1,6 @@
+---
+- name: Configure Database Servers
+  hosts: dbservers
+  user: deploy
+  roles:
+    - db

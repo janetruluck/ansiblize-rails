@@ -1,0 +1,17 @@
+---
+- name: create iptables rules
+  sudo: yes
+  template: src=iptables.j2 dest=/etc/iptables.firewall.rules
+
+- name: activate iptables rules
+  sudo: yes
+  shell: iptables-restore < /etc/iptables.firewall.rules
+
+- name: create iptables restart script
+  sudo: yes
+  template: src=firewall.j2 dest=/etc/network/if-pre-up.d/firewall
+
+- name: make iptable restart script executable
+  sudo: yes
+  shell: chmod +x /etc/network/if-pre-up.d/firewall
+

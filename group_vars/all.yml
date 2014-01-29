@@ -1,0 +1,51 @@
+---
+# application name 
+application: missioncontrol
+
+# Local setting for storing generated passwords, SSH key and project directory
+local_home: "{{ lookup('env', 'HOME') }}"
+local_project_directory: "{{ local_home }}/Projects/Personal/{{ application }}"
+local_ssh_key: "{{ local_home }}/.ssh/id_rsa.pub"
+
+# Paths on the remote servers
+current_path: /home/{{ user }}/apps/{{ application }}/current
+shared_path: /home/{{ user }}/apps/{{ application }}/shared
+
+# User configuration
+user: deploy
+# Uncomment the below lines to setup the user groups and password for the deploy user if needed.
+# user_group: sudo
+# user_password: password12345
+
+# Ruby
+ruby_version: 2.0.0p353
+ruby_url: http://cache.ruby-lang.org/pub/ruby/2.0/ruby-{{ ruby_version }}.tar.gz
+
+# Monit
+monit_log: "{{ shared_path }}/log/monit.log"
+
+# Pubsub
+faye_host: "{{ groups['pubsubservers'][0] }}"
+faye_token: "{{ lookup('password', local_home + '/' + application + '/faye_token length=64') }}"
+faye_pid: "{{ current_path }}/tmp/pids/faye.pid"
+
+# Redis
+redis_ip: "{{ groups['redisservers'][0] }}"
+redis_port: 6379
+
+# Postgresql
+postgres_version: 9.2
+postgresql_host: "{{ groups['dbservers'][0] }}"
+postgresql_database:  "{{ application }}" 
+postgresql_port: 5432
+postgresql_password: "{{ lookup('password', local_home + '/' + application + '/postgresqlpassword length=64') }}"
+postgresql_local_auth_type:  "md5"
+postgresql_pid:  "/var/run/postgresql/{{ postgresql_version }}-main.pid" 
+use_hstore:  true 
+
+# Unicorn
+unicorn_pid: "{{ current_path }}/tmp/pids/unicorn.pid"
+unicorn_config: "{{ shared_path }}/config/unicorn.rb"
+unicorn_log: "{{ shared_path }}/log/unicorn.log"
+unicorn_socket: /tmp/unicorn.{{ application }}.sock
+unicorn_workers: 4

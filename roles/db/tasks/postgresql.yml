@@ -1,0 +1,40 @@
+---
+- name: add postgresql ppa
+  sudo: yes
+  apt_repository: repo='ppa:pitti/postgresql' state=present update_cache=yes
+
+- name: install postgresql
+  sudo: yes
+  apt: name={{item}} state=present
+  with_items:
+  - postgresql-{{ postgres_version }}
+  - libpq-dev
+  - postgresql-contrib-{{ postgres_version }}
+  - python-psycopg2
+
+- name: update postgresql authentication type
+  sudo: yes
+  template: src=pg_hba.conf.j2 dest=/etc/postgresql/{{ postgres_version }}/main/pg_hba.conf owner=postgres group=postgres mode=0600
+  notify: restart postgresql
+
+- meta: flush_handlers # We need to run this handler so the auth methods are relaxed
+
+- name: create postgres user
+  postgresql_user: login_host=localhost name={{ user }} password={{ postgresql_password }} fail_on_user=yes state=present role_attr_flags=CREATEDB,SUPERUSER
+
+- name: create database
+  sudo: yes
+  postgresql_db: name={{ application }} owner={{ user }} state=present login_host=localhost
+
+- name: create hstore extension
+  command: psql -U postgres -c "create extension if not exists hstore;"
+  
+- name: update postgresql authentication type to safe settings
+  sudo: yes
+  template: src=pg_hba_safe.conf.j2 dest=/etc/postgresql/{{ postgres_version }}/main/pg_hba.conf owner=postgres group=postgres mode=0600
+  notify: restart postgresql
+
+- name: update postgresql.conf to allow tcp connections
+  sudo: yes
+  lineinfile: dest=/etc/postgresql/{{ postgres_version }}/main/postgresql.conf regexp='^listen_addresses' line="listen_addresses = '*'" state=present
+  notify: restart postgresql
